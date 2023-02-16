@@ -1,6 +1,7 @@
 const express = require('express')
 const { faker } = require('@faker-js/faker')
 const createError = require('http-errors')
+const cors = require('cors');
 
 const app = express()
 const port = 3001
@@ -125,6 +126,10 @@ app.get('/influencers/:influencerId', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hi There!')
 })
+
+app.use(cors({
+    origin: '*'
+}));
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`)
