@@ -6,6 +6,8 @@ const cors = require('cors');
 const app = express()
 const port = 3001
 
+app.use(cors());
+
 const createRandomBrand = () => ({
   id: faker.datatype.uuid(),
   name: faker.company.name(),
@@ -126,10 +128,6 @@ app.get('/influencers/:influencerId', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hi There!')
 })
-
-app.use(cors({
-    origin: '*'
-}));
 
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`)
