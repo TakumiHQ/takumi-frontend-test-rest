@@ -12,6 +12,7 @@ const createRandomBrand = () => ({
   id: faker.datatype.uuid(),
   name: faker.company.name(),
   logo: faker.image.business(300, 300, true),
+  campaigns: [],
 });
 
 const createRandomUser = () => ({
@@ -41,6 +42,15 @@ const createDB = () => {
   for (let c = 0; c < campaigns.length; c++) {
     const brandIdx = Math.floor(Math.random(brands.length - 1) * 10);
     campaigns[c].brandId = brands[brandIdx].id
+
+    brands.map(brand => {
+      if (brand.id === campaigns[c].brandId) {
+        brand.campaigns.push({
+        id: campaigns[c].id,
+        name: campaigns[c].name,
+      }); 
+      }
+    })
 
     const randomUniqueUsers = influencers.filter(() => {
       const random = Math.floor(Math.random(influencers.length) * 1000);
