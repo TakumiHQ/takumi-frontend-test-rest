@@ -46,13 +46,13 @@ const createDB = () => {
       const random = Math.floor(Math.random(influencers.length) * 1000);
        return random < influencers.length
     });
-    campaigns[c].influencers = randomUniqueUsers;
-  }
-
-  // attach influencers to campaigns
-  for (let c = 0; c < campaigns.length; c++) {
-    const index = Math.floor(Math.random(brands.length - 1) * 10);
-    campaigns[c].brandId = brands[index].id
+    // use only the id, name and thumb
+    campaigns[c].influencers = randomUniqueUsers.map(item => ({
+      id: item.id,
+      firstName: item.firstName,
+      lastName: item.lastName,
+      thumbnail: item.thumbnail,
+    }));
   }
 
   return {brands, campaigns, influencers};
