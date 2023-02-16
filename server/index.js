@@ -3,7 +3,7 @@ const { faker } = require('@faker-js/faker')
 const createError = require('http-errors')
 
 const app = express()
-const port = 3000
+const port = 3001
 
 const createRandomBrand = () => ({
   id: faker.datatype.uuid(),
