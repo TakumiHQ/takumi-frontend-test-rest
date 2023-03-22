@@ -1,6 +1,5 @@
 const express = require('express')
 const { faker } = require('@faker-js/faker')
-const createError = require('http-errors')
 const cors = require('cors');
 
 const app = express()
@@ -20,7 +19,7 @@ const createRandomUser = () => ({
   firstName: faker.name.firstName(),
   lastName: faker.name.lastName(),
   email: faker.internet.email(),
-  thumbnail: faker.image.avatar(),
+  avatar: faker.image.avatar(),
   birthdate: faker.date.birthdate(),
   country: faker.address.country(),
 })
@@ -29,6 +28,7 @@ const createRandomCampaign = () => ({
   id: faker.datatype.uuid(),
   name: faker.commerce.productName(),
   description: faker.commerce.productDescription(),
+  coverImage: faker.image.food(640, 480, true),
   brandId: '',
   influencers: [],
 });
@@ -48,6 +48,7 @@ const createDB = () => {
         brand.campaigns.push({
         id: campaigns[c].id,
         name: campaigns[c].name,
+        coverImage: campaigns[c].coverImage,
       }); 
       }
     })
@@ -56,12 +57,12 @@ const createDB = () => {
       const random = Math.floor(Math.random(influencers.length) * 1000);
        return random < influencers.length
     });
-    // use only the id, name and thumb
+    
     campaigns[c].influencers = randomUniqueUsers.map(item => ({
       id: item.id,
       firstName: item.firstName,
       lastName: item.lastName,
-      thumbnail: item.thumbnail,
+      avatar: item.avatar,
     }));
   }
 
@@ -74,53 +75,58 @@ const DB = createDB();
 
 // GET
 app.get('/all', (req, res) => {
-  const json = JSON.stringify(DB)
-  res.send(json)
+  res.json(DB)
 })
 
 app.param('brandId', (req, res, next, brandId) => {
   const result = DB.brands.find(item => item.id === brandId);
   if (result) {
-    const json = JSON.stringify(result);
-    res.send(json)
+    res.json(result)
   } else {
-    next(createError(404, 'failed to find brand'));
+    res.json();
   }
 })
 
 app.param('campaignId', (req, res, next, campaignId) => {
   const result = DB.campaigns.find(item => item.id === campaignId);
   if (result) {
-    const json = JSON.stringify(result);
-    res.send(json)
+    res.json(result)
   } else {
-    next(createError(404, 'failed to find campaign'));
+    res.json();
   }
 })
 
 app.param('influencerId', (req, res, next, influencerId) => {
-  const result = DB.influencers.find(item => item.id === influencerId);
-  if (result) {
-    const json = JSON.stringify(result);
-    res.send(json)
+  const influencer = DB.influencers.find(item => item.id === influencerId);
+  const campaigns = DB.campaigns.filter(campaign => campaign.influencers.find(influencer => influencer.id === influencerId));
+  const campaignsSanitized = campaigns.map(campaign => ({
+    id: campaign.id,
+    name: campaign.name,
+    coverImage: campaign.coverImage,
+  }))
+
+  const result = {
+    ...influencer,
+    campaigns: campaignsSanitized,
+  }
+
+  if (influencer) {
+    res.json(result);
   } else {
-    next(createError(404, 'failed to find influencer'));
+    res.json();
   }
 })
 
 app.get('/brands', (req, res) => {
-  const json = JSON.stringify(DB.brands)
-  res.send(json)
+  res.json(DB.brands)
 })
 
 app.get('/campaigns', (req, res) => {
-  const json = JSON.stringify(DB.campaigns)
-  res.send(json)
+  res.json(DB.campaigns)
 })
 
 app.get('/influencers', (req, res) => {
-  const json = JSON.stringify(DB.influencers)
-  res.send(json)
+  res.json(DB.influencers)
 })
 
 app.get('/brands/:brandId', (req, res) => {
@@ -136,7 +142,41 @@ app.get('/influencers/:influencerId', (req, res) => {
 })
 
 app.get('/', (req, res) => {
-  res.send('Hi There!')
+  const body = `
+    <html>
+    <body style="font-family: sans-serif;">
+      <h1>Hi There!</h1>
+      <p>
+        <h2>Here's your endpoints:</h2>
+      </p>
+      <p>
+        <h3>
+          <ul>
+            <p>
+              <li>
+                <span>/brands</span>
+                <span><ul><li>/brands/:id</li></ul></span>
+              </li>
+            </p>
+            <p>
+              <li>
+                <span>/campaigns</span>
+                <span><ul><li>/campaigns/:id</li></ul></span>
+              </li>
+            </p>
+            <p>
+            <li>
+              <span>/influencers</span>
+              <span><ul><li>/influencers/:id</li></ul></span>
+            </li>
+            </p>
+          </ul>
+        </h3>
+      </p>
+    </body>
+    </html>
+  `
+  res.send(body);
 })
 
 app.listen(port, () => {
