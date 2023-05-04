@@ -1,4 +1,5 @@
 import { Container } from '@mui/material';
+
 import Brands from './screens/Brands';
 import NavigationBar, {
   SECTION_BRANDS,
