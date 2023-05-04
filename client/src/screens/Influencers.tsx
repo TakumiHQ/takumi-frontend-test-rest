@@ -7,19 +7,9 @@ import {
   ListItemText,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
-import { fetchInfluencers } from '../services/api';
 
 const Influencers: React.FC = () => {
   const [influencers, serInfluencers] = useState<Influencer[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const data = await fetchInfluencers();
-      if (data) {
-        serInfluencers(data);
-      }
-    })();
-  }, []);
 
   return (
     <Container maxWidth="xl">

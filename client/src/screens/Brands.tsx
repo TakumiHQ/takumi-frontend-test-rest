@@ -6,20 +6,10 @@ import {
   ListItemAvatar,
   ListItemText,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { fetchBrands } from '../services/api';
+import { useState } from 'react';
 
 const Brands: React.FC = () => {
   const [brands, setBrands] = useState<Brand[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      const data = await fetchBrands();
-      if (data) {
-        setBrands(data);
-      }
-    })();
-  }, []);
 
   return (
     <Container maxWidth="xl">
