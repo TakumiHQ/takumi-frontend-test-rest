@@ -4,6 +4,12 @@ This test is composed of 2 applications, a server and a client, each are their o
 
 #
 
+## Requirements
+
+Node LTS version v16.18.x
+
+#
+
 ## Server
 
 ### `npm install`
