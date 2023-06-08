@@ -25,5 +25,4 @@ yarn-error.log*
 /playwright-report/
 /playwright/.cache/
 
-TEST.md
 api.ts
